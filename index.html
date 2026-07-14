@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f4ef">
+<title>采购清单 · Chef Felix's Secret Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f4ef;
+    --paper-deep: #efece4;
+    --ink: #191713;
+    --ink-soft: #57534a;
+    --faded: #a89f90;
+    --hairline: #ddd6c8;
+    --wine: #8c2f2f;      /* by Felix Fu 签名红 */
+    --olive: #6f7d5c;     /* 家里有 */
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Serif SC', 'Songti SC', serif;
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+  /* paper grain */
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+  .sheet {
+    width: 100%;
+    max-width: 520px;
+    padding: 40px 20px calc(60px + env(safe-area-inset-bottom));
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── masthead ─────────────────────── */
+  .masthead { text-align: center; animation: rise .7s ease both; }
+  .monogram {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: -6px;
+    color: var(--ink);
+    text-shadow: 1.5px 1.5px 0 rgba(140,47,47,0.28);
+    margin-bottom: 4px;
+  }
+  .kitchen-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 4px;
+    color: var(--faded);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: 12px;
+    text-indent: 12px;
+    margin-bottom: 10px;
+  }
+  .sub {
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 2.5px;
+    margin-bottom: 26px;
+  }
+  .sub em {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    letter-spacing: 1px;
+    color: var(--wine);
+  }
+  .rule {
+    display: flex; align-items: center; gap: 12px;
+    margin: 0 8px 0;
+    animation: rise .7s .1s ease both;
+  }
+  .rule::before, .rule::after {
+    content: ""; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--hairline));
+  }
+  .rule::after { background: linear-gradient(90deg, var(--hairline), transparent); }
+  .rule span { font-size: 11px; color: var(--faded); letter-spacing: 3px; }
+
+  /* ── sticky progress ─────────────────────── */
+  .progress-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: linear-gradient(var(--paper) 82%, transparent);
+    padding: 14px 4px 18px;
+    margin: 8px -4px 6px;
+    animation: rise .7s .15s ease both;
+  }
+  .progress-line {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 8px;
+  }
+  .progress-line .count {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+  }
+  .progress-line .count small {
+    font-size: 13px; font-weight: 500; color: var(--faded);
+  }
+  .progress-line .label { font-size: 11px; letter-spacing: 2px; color: var(--faded); }
+  .bar {
+    height: 3px; background: var(--paper-deep);
+    border-radius: 2px; overflow: hidden;
+  }
+  .bar i {
+    display: block; height: 100%; width: 0%;
+    background: linear-gradient(90deg, var(--ink) 60%, var(--wine));
+    transition: width .45s cubic-bezier(.22,1,.36,1);
+  }
+  .stats {
+    display: flex; gap: 14px; justify-content: center;
+    font-size: 11px; color: var(--faded); letter-spacing: 1px;
+    margin-top: 9px;
+  }
+  .stats b { color: var(--ink-soft); font-weight: 600; }
+
+  /* ── sections ─────────────────────── */
+  .dish {
+    margin: 30px 0 4px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--hairline);
+    display: flex; align-items: baseline; gap: 8px;
+    animation: rise .6s ease both;
+  }
+  .dish .idx {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--wine);
+  }
+  .dish .zh { font-size: 16px; font-weight: 700; letter-spacing: 2.5px; }
+  .dish .en {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-size: 11px;
+    color: var(--faded); letter-spacing: 0.5px;
+    margin-left: auto; text-align: right;
+  }
+
+  /* ── items ─────────────────────── */
+  .item {
+    padding: 13px 2px 11px;
+    border-bottom: 1px dashed #e7e2d6;
+    animation: rise .6s ease both;
+  }
+  .item:last-of-type { border-bottom: none; }
+  .row {
+    display: flex; align-items: baseline; gap: 12px;
+    font-size: 16px; cursor: pointer;
+  }
+  .box {
+    flex-shrink: 0;
+    width: 21px; height: 21px;
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 2px;
+    position: relative; top: 4px;
+    transition: all .2s;
+  }
+  .box::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: center/13px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8.5 6 12l7.5-8' fill='none' stroke='%23f6f4ef' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    opacity: 0; transform: scale(.4);
+    transition: all .22s cubic-bezier(.34,1.56,.64,1);
+  }
+  .item.done .box { background: var(--ink); border-color: var(--ink); }
+  .item.done .box::after { opacity: 1; transform: scale(1); }
+  .name { transition: color .25s; }
+  .name-wrap { position: relative; }
+  .name-wrap::after {
+    content: "";
+    position: absolute; left: -2px; right: -2px; top: 55%;
+    height: 1.5px; background: var(--wine);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform .3s ease;
+  }
+  .item.done .name { color: var(--faded); }
+  .item.done .name-wrap::after { transform: scaleX(1); }
+  .qty {
+    margin-left: auto;
+    font-size: 12px; color: var(--faded);
+    white-space: nowrap; padding-left: 10px;
+    letter-spacing: 0.5px;
+  }
+  .item.done .qty { color: #cdc6b8; }
+
+  /* ── chips ─────────────────────── */
+  .chips { display: flex; gap: 7px; margin: 10px 0 0 33px; flex-wrap: wrap; }
+  .chip {
+    font-family: inherit;
+    font-size: 12.5px; letter-spacing: 1.5px;
+    color: var(--faded);
+    border: 1px solid var(--hairline);
+    background: transparent;
+    border-radius: 999px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all .18s ease;
+    user-select: none;
+  }
+  .chip:active { transform: scale(.94); }
+  .chip.on {
+    background: var(--ink); color: var(--paper);
+    border-color: var(--ink);
+    box-shadow: 0 2px 6px rgba(25,23,19,.22);
+  }
+  .chip.on.home {
+    background: var(--olive); border-color: var(--olive);
+    box-shadow: 0 2px 6px rgba(111,125,92,.3);
+  }
+  .note {
+    font-size: 11.5px; color: var(--faded);
+    margin: 7px 0 0 33px; line-height: 1.7;
+  }
+  .note::before { content: "— "; color: var(--wine); }
+
+  /* ── footer ─────────────────────── */
+  .reset {
+    display: block;
+    margin: 34px auto 0;
+    background: none;
+    border: 1px solid var(--hairline);
+    color: var(--faded);
+    font-family: inherit;
+    font-size: 12px; letter-spacing: 3px;
+    padding: 10px 26px;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .reset:active { color: var(--wine); border-color: var(--wine); }
+  .footer {
+    text-align: center;
+    margin-top: 30px;
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+    font-size: 12.5px;
+    color: var(--faded);
+    letter-spacing: 1px;
+  }
+  .footer .heart { color: var(--wine); font-style: normal; }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header class="masthead">
+    <div class="monogram">FF</div>
+    <div class="kitchen-name">Chef Felix's Secret Kitchen</div>
+    <h1>采购清单</h1>
+    <div class="sub">2026.07.18 · 小胡 &amp; 孙老师晚宴 · 4 人 · <em>Mise en Place</em></div>
+  </header>
+  <div class="rule"><span>❦</span></div>
+
+  <div class="progress-wrap">
+    <div class="progress-line">
+      <span class="count"><span id="done">0</span><small> / <span id="total">0</span> 项备齐</small></span>
+      <span class="label" id="pct">0%</span>
+    </div>
+    <div class="bar"><i id="fill"></i></div>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <main id="list"></main>
+
+  <button class="reset" id="reset">全 部 重 置</button>
+  <div class="footer">Chef Felix's Secret Kitchen <span class="heart">♥</span> from New York to Beijing</div>
+</div>
+
+<script>
+  const DATA = [
+    { zh: "蜜桃鱼子酱鳌虾塔塔", en: "Langoustine Tartare", items: [
+      ["鳌虾(刺身级)", "8–12 只"],
+      ["白桃 / 水蜜桃", "2 个"],
+      ["鱼子酱", "1 小罐 30g"],
+      ["柠檬", "2 个(甜点共用)"],
+      ["干葱头(小洋葱头)", "1 个"],
+      ["细香葱 / 莳萝", "1 小把"],
+      ["初榨橄榄油(好油)", "备查"],
+    ]},
+    { zh: "西班牙蒜香油浸虾", en: "Gambas al Ajillo", items: [
+      ["大虾(鲜虾/红虾)", "500g"],
+      ["大蒜", "2 头"],
+      ["干辣椒 / 辣椒碎", "少量"],
+      ["欧芹", "1 把(牛尾共用)"],
+      ["法棍", "1 根"],
+      ["橄榄油(油浸用量大)", "≥250ml"],
+      ["雪莉酒", "可选,白兰地可替"],
+    ]},
+    { zh: "法式龙虾浓汤", en: "Lobster Bisque", items: [
+      ["活波士顿龙虾", "1–2 只"],
+      ["洋葱 / 胡萝卜 / 西芹", "各 2(牛尾共用)"],
+      ["番茄膏", "1 小罐(牛尾共用)"],
+      ["白兰地", "备查"],
+      ["干白葡萄酒(烩饭共用)", "1 瓶"],
+      ["淡奶油(甜点共用)", "750ml"],
+      ["百里香 / 月桂叶", "备查"],
+      ["大米或面粉(增稠)", "备查", "经典 bisque 用少量米或面粉增稠,家里有即可"],
+    ]},
+    { zh: "米兰炖牛尾烩饭", en: "Risotto alla Milanese", items: [
+      ["牛尾", "1kg"],
+      ["藏红花", "1 小份"],
+      ["烩饭米(Arborio)", "300g"],
+      ["帕玛森芝士块", "150g"],
+      ["牛高汤 / 高汤块", "1.5L"],
+      ["牛骨髓", "可选", "传统米兰烩饭以骨髓起锅,风味更正;不加也成立"],
+      ["黄油", "备查", "格雷莫拉塔用已有的柠檬皮 + 欧芹 + 蒜即可"],
+    ]},
+    { zh: "柠檬意式奶冻", en: "Lemon Panna Cotta", items: [
+      ["牛奶", "250ml"],
+      ["吉利丁片", "1 盒"],
+      ["香草荚 / 香草精", "可选"],
+      ["白砂糖", "备查", "提前一晚做好冷藏,至少冷藏 4 小时"],
+    ]},
+    { zh: "配饮与餐桌", en: "Drinks & Table", items: [
+      ["Manzanita 苹果气泡汁", "2 瓶(冰镇)"],
+      ["气泡水 / 饮用水", "若干"],
+      ["菜单打印", "4 份"],
+      ["餐巾 / 蜡烛 / 鲜花", "可选"],
+    ]},
+  ];
+  const SOURCES = ["盒马", "淘宝", "供应商", "家里有"];
+  const KEY = "shopping-20260718-v3";
+  const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
+
+  const state = JSON.parse(localStorage.getItem(KEY) || '{"checked":{},"source":{}}');
+  const list = document.getElementById("list");
+  let idx = 0, delay = 0.18;
+
+  DATA.forEach((sec, s) => {
+    const d = document.createElement("div");
+    d.className = "dish";
+    d.style.animationDelay = (delay += 0.04) + "s";
+    d.innerHTML = `<span class="idx">${ROMAN[s]}.</span><span class="zh">${sec.zh}</span><span class="en">${sec.en}</span>`;
+    list.appendChild(d);
+
+    sec.items.forEach(([name, qty, note]) => {
+      const i = idx++;
+      const el = document.createElement("div");
+      el.className = "item";
+      el.style.animationDelay = (delay += 0.025) + "s";
+      el.innerHTML = `
+        <div class="row" data-i="${i}">
+          <span class="box"></span>
+          <span class="name-wrap"><span class="name">${name}</span></span>
+          <span class="qty">${qty}</span>
+        </div>
+        <div class="chips">${SOURCES.map(x => `<button class="chip" data-i="${i}" data-s="${x}">${x}</button>`).join("")}</div>
+        ${note ? `<div class="note">${note}</div>` : ""}`;
+      list.appendChild(el);
+    });
+  });
+  const items = [...list.querySelectorAll(".item")];
+
+  list.addEventListener("click", e => {
+    const row = e.target.closest(".row");
+    const chip = e.target.closest(".chip");
+    if (chip) {
+      const i = chip.dataset.i, s = chip.dataset.s;
+      if (state.source[i] === s) delete state.source[i];
+      else { state.source[i] = s; if (s === "家里有") state.checked[i] = true; }
+    } else if (row) {
+      const i = row.dataset.i;
+      state.checked[i] = !state.checked[i];
+    } else return;
+    save(); render();
+  });
+
+  function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+  function render() {
+    let done = 0; const counts = {};
+    items.forEach((el, i) => {
+      const on = !!state.checked[i];
+      el.classList.toggle("done", on);
+      if (on) done++;
+      const src = state.source[i];
+      if (src) counts[src] = (counts[src] || 0) + 1;
+      el.querySelectorAll(".chip").forEach(c => {
+        const sel = c.dataset.s === src;
+        c.classList.toggle("on", sel);
+        c.classList.toggle("home", sel && src === "家里有");
+      });
+    });
+    document.getElementById("done").textContent = done;
+    document.getElementById("total").textContent = items.length;
+    const pct = Math.round(done / items.length * 100);
+    document.getElementById("pct").textContent = pct + "%";
+    document.getElementById("fill").style.width = pct + "%";
+    document.getElementById("stats").innerHTML =
+      SOURCES.map(s => `${s} <b>${counts[s] || 0}</b>`).join("<span style='color:#ddd6c8'>·</span>");
+  }
+
+  document.getElementById("reset").onclick = () => {
+    if (!confirm("确定清空所有勾选和渠道标记?")) return;
+    state.checked = {}; state.source = {};
+    save(); render();
+  };
+
+  render();
+</script>
+</body>
+</html>
