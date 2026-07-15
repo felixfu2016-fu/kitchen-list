@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f4ef">
+<title>备餐流程 · Chef Felix's Secret Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f4ef;
+    --paper-deep: #efece4;
+    --ink: #191713;
+    --ink-soft: #57534a;
+    --faded: #a89f90;
+    --hairline: #ddd6c8;
+    --wine: #8c2f2f;
+    --olive: #6f7d5c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Serif SC', 'Songti SC', serif;
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+  .sheet {
+    width: 100%;
+    max-width: 520px;
+    padding: 40px 20px calc(60px + env(safe-area-inset-bottom));
+    position: relative;
+    z-index: 1;
+  }
+  .masthead { text-align: center; animation: rise .7s ease both; }
+  .monogram {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-weight: 700;
+    font-size: 44px; line-height: 1;
+    letter-spacing: -6px;
+    text-shadow: 1.5px 1.5px 0 rgba(140,47,47,0.28);
+    margin-bottom: 4px;
+  }
+  .kitchen-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 4px; color: var(--faded);
+    text-transform: uppercase; margin-bottom: 22px;
+  }
+  h1 { font-size: 24px; font-weight: 700; letter-spacing: 12px; text-indent: 12px; margin-bottom: 10px; }
+  .sub { font-size: 12px; color: var(--ink-soft); letter-spacing: 2.5px; margin-bottom: 14px; }
+  .sub em { font-family: 'Playfair Display', serif; font-style: italic; letter-spacing: 1px; color: var(--wine); }
+  .crosslink {
+    display: inline-block;
+    font-size: 12px; letter-spacing: 2px;
+    color: var(--wine); text-decoration: none;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    padding: 6px 16px;
+    margin-bottom: 22px;
+  }
+  .rule { display: flex; align-items: center; gap: 12px; margin: 0 8px; animation: rise .7s .1s ease both; }
+  .rule::before, .rule::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, transparent, var(--hairline)); }
+  .rule::after { background: linear-gradient(90deg, var(--hairline), transparent); }
+  .rule span { font-size: 11px; color: var(--faded); letter-spacing: 3px; }
+
+  .progress-wrap {
+    position: sticky; top: 0; z-index: 10;
+    background: linear-gradient(var(--paper) 82%, transparent);
+    padding: 14px 4px 18px; margin: 8px -4px 6px;
+    animation: rise .7s .15s ease both;
+  }
+  .progress-line { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .progress-line .count { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+  .progress-line .count small { font-size: 13px; font-weight: 500; color: var(--faded); }
+  .progress-line .label { font-size: 11px; letter-spacing: 2px; color: var(--faded); }
+  .bar { height: 3px; background: var(--paper-deep); border-radius: 2px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--ink) 60%, var(--wine)); transition: width .45s cubic-bezier(.22,1,.36,1); }
+
+  .day {
+    margin: 32px 0 6px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--hairline);
+    display: flex; align-items: baseline; gap: 10px;
+    animation: rise .6s ease both;
+  }
+  .day .zh { font-size: 17px; font-weight: 700; letter-spacing: 3px; }
+  .day .en { font-family: 'Playfair Display', serif; font-style: italic; font-size: 11px; color: var(--faded); margin-left: auto; }
+
+  .step {
+    display: flex; gap: 12px;
+    padding: 14px 2px 12px;
+    border-bottom: 1px dashed #e7e2d6;
+    cursor: pointer;
+    animation: rise .6s ease both;
+  }
+  .step:last-of-type { border-bottom: none; }
+  .time {
+    flex-shrink: 0;
+    width: 52px;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--wine);
+    padding-top: 3px;
+    letter-spacing: 0.5px;
+  }
+  .box {
+    flex-shrink: 0;
+    width: 21px; height: 21px;
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 2px;
+    position: relative; top: 2px;
+    transition: all .2s;
+  }
+  .box::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: center/13px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8.5 6 12l7.5-8' fill='none' stroke='%23f6f4ef' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    opacity: 0; transform: scale(.4);
+    transition: all .22s cubic-bezier(.34,1.56,.64,1);
+  }
+  .step.done .box { background: var(--ink); border-color: var(--ink); }
+  .step.done .box::after { opacity: 1; transform: scale(1); }
+  .body { flex: 1; }
+  .task { font-size: 15.5px; font-weight: 600; letter-spacing: 1px; transition: color .25s; }
+  .task .flag {
+    font-size: 10.5px; font-weight: 400;
+    color: var(--paper); background: var(--wine);
+    border-radius: 3px; padding: 2px 6px;
+    letter-spacing: 2px; margin-left: 6px;
+    position: relative; top: -1px;
+    white-space: nowrap;
+  }
+  .detail { font-size: 12.5px; color: var(--ink-soft); line-height: 1.75; margin-top: 4px; }
+  .step.done .task { color: var(--faded); text-decoration: line-through; text-decoration-color: var(--wine); text-decoration-thickness: 1.5px; }
+  .step.done .detail { color: #c9c2b4; }
+  .step.done .time { color: #c9a0a0; }
+
+  .reset {
+    display: block; margin: 34px auto 0;
+    background: none; border: 1px solid var(--hairline);
+    color: var(--faded); font-family: inherit;
+    font-size: 12px; letter-spacing: 3px;
+    padding: 10px 26px; border-radius: 2px; cursor: pointer;
+  }
+  .footer {
+    text-align: center; margin-top: 30px;
+    font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: 12.5px; color: var(--faded); letter-spacing: 1px;
+  }
+  .footer .heart { color: var(--wine); font-style: normal; }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header class="masthead">
+    <div class="monogram">FF</div>
+    <div class="kitchen-name">Chef Felix's Secret Kitchen</div>
+    <h1>备餐流程</h1>
+    <div class="sub">2026.07.18 · 小胡 &amp; 孙老师晚宴 · <em>Countdown to Dinner</em></div>
+    <a class="crosslink" href="./">← 采购清单</a>
+  </header>
+  <div class="rule"><span>❦</span></div>
+
+  <div class="progress-wrap">
+    <div class="progress-line">
+      <span class="count"><span id="done">0</span><small> / <span id="total">0</span> 步完成</small></span>
+      <span class="label" id="pct">0%</span>
+    </div>
+    <div class="bar"><i id="fill"></i></div>
+  </div>
+
+  <main id="list"></main>
+
+  <button class="reset" id="reset">全 部 重 置</button>
+  <div class="footer">Chef Felix's Secret Kitchen <span class="heart">♥</span> from New York to Beijing</div>
+</div>
+
+<script>
+  const DATA = [
+    { zh: "周五 7.17", en: "Friday · Mise en Place", steps: [
+      ["18:00", "收货核对", "盒马 + 淘宝件到齐,对采购清单逐项勾掉", 0],
+      ["18:30", "鳌虾解冻", "冷冻移到冷藏缓慢解冻;冰鲜则不动", 0],
+      ["20:00", "牛尾开炖", "焯水、煎上色,下蔬菜、番茄膏、干白、高汤,小火慢炖盖盖", 1],
+      ["20:30", "龙虾浓汤", "烫熟取肉冷藏;壳炒香、白兰地点火、下蔬菜熬汤底", 0],
+      ["21:30", "柠檬奶冻", "做好入杯进冰箱,凝固需 4 小时以上", 1],
+      ["21:50", "汤底收尾", "打细过筛冷藏;Manzanita、气泡水进冰箱", 0],
+      ["22:30", "巡锅", "看牛尾,汤少补水", 0],
+      ["23:30", "牛尾收工", "筷子轻松插透即关火,稍凉连汁冷藏", 0],
+    ]},
+    { zh: "周六 7.18", en: "Saturday · Showtime", steps: [
+      ["下午", "白桃冰镇", "室温催熟的桃子放回冰箱", 0],
+      ["16:00", "全部备料", "蒜片、干葱末、香葱/莳萝/欧芹切碎分碗;帕玛森擦粉;藏红花温水泡;高汤上炉保温;格雷莫拉塔(柠檬皮+欧芹+蒜)拌好", 1],
+      ["17:00", "摆桌终检", "菜单、餐具、蜡烛鲜花、餐巾就位", 0],
+      ["17:30", "牛尾回热", "连汁小火回热后保温;不够软现在补炖;顺手确认奶冻凝固", 0],
+      ["18:15", "塔塔预拌", "鳌虾切丁拌干葱、柠檬汁、橄榄油,冷藏;桃子切丁", 0],
+      ["18:30", "烩饭开炒", "此后 25 分钟不离灶;同时浓汤回热、加奶油调味、龙虾肉入汤温热", 1],
+      ["18:45", "蒜香虾下锅", "8 分钟;烩饭离火拌黄油帕玛森", 1],
+      ["18:55", "集中装盘", "塔塔叠桃丁(鱼子酱最后一秒放)→ 浓汤入碗 → 烩饭铺牛尾撒格雷莫拉塔 → 蒜香虾连锅配法棍", 1],
+      ["19:00", "上桌开餐", "全部同时上桌,开 Manzanita", 0],
+      ["饭后", "甜点", "奶冻从冰箱直接上,现擦柠檬皮屑", 0],
+    ]},
+  ];
+  const KEY = "prep-20260718";
+  const state = JSON.parse(localStorage.getItem(KEY) || "{}");
+  const list = document.getElementById("list");
+  let idx = 0, delay = 0.18;
+
+  DATA.forEach(day => {
+    const d = document.createElement("div");
+    d.className = "day";
+    d.style.animationDelay = (delay += 0.04) + "s";
+    d.innerHTML = `<span class="zh">${day.zh}</span><span class="en">${day.en}</span>`;
+    list.appendChild(d);
+    day.steps.forEach(([time, task, detail, key]) => {
+      const i = idx++;
+      const el = document.createElement("div");
+      el.className = "step";
+      el.dataset.i = i;
+      el.style.animationDelay = (delay += 0.025) + "s";
+      el.innerHTML = `
+        <span class="time">${time}</span>
+        <span class="box"></span>
+        <div class="body">
+          <div class="task">${task}${key ? '<span class="flag">关键</span>' : ""}</div>
+          <div class="detail">${detail}</div>
+        </div>`;
+      list.appendChild(el);
+    });
+  });
+  const steps = [...list.querySelectorAll(".step")];
+
+  list.addEventListener("click", e => {
+    const el = e.target.closest(".step");
+    if (!el) return;
+    const i = el.dataset.i;
+    state[i] = !state[i];
+    localStorage.setItem(KEY, JSON.stringify(state));
+    render();
+  });
+
+  function render() {
+    let done = 0;
+    steps.forEach((el, i) => {
+      const on = !!state[i];
+      el.classList.toggle("done", on);
+      if (on) done++;
+    });
+    document.getElementById("done").textContent = done;
+    document.getElementById("total").textContent = steps.length;
+    const pct = Math.round(done / steps.length * 100);
+    document.getElementById("pct").textContent = pct + "%";
+    document.getElementById("fill").style.width = pct + "%";
+  }
+
+  document.getElementById("reset").onclick = e => {
+    e.stopPropagation();
+    if (!confirm("确定清空流程进度?(不影响采购清单)")) return;
+    Object.keys(state).forEach(k => delete state[k]);
+    localStorage.setItem(KEY, JSON.stringify(state));
+    render();
+  };
+
+  render();
+</script>
+</body>
+</html>
