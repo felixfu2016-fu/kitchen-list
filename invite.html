@@ -185,6 +185,33 @@
   .copy-hint {
     font-size: 11.5px; color: var(--taupe);
     letter-spacing: 1px; margin-top: 11px; line-height: 1.8;
+    margin-bottom: 34px;
+  }
+  /* ── 停车指引 ── */
+  .park-label {
+    font-size: 13px; color: var(--taupe);
+    letter-spacing: 5px; text-indent: 5px;
+    margin-bottom: 14px;
+  }
+  .park-steps {
+    display: inline-block;
+    text-align: left;
+    margin-bottom: 12px;
+  }
+  .park-step {
+    display: flex; align-items: baseline; gap: 10px;
+    font-size: 13.5px; color: var(--navy);
+    letter-spacing: 1.5px; line-height: 2.1;
+  }
+  .park-step i {
+    font-family: 'Playfair Display', serif;
+    font-style: normal; font-weight: 700;
+    font-size: 12px; color: var(--taupe);
+    flex-shrink: 0;
+  }
+  .park-wait {
+    font-size: 12.5px; color: var(--taupe);
+    letter-spacing: 2px;
     margin-bottom: 40px;
   }
 
@@ -283,6 +310,16 @@
       <div class="copy-hint">复制后打开「百度地图」App 粘贴搜索即可导航</div>
     </div>
 
+    <div class="r" style="animation-delay:.8s">
+      <div class="park-label">停 车 指 引</div>
+      <div class="park-steps">
+        <div class="park-step"><i>1.</i>驶入小区后,直接下地库</div>
+        <div class="park-step"><i>2.</i>地下一层右转,行至尽头再右转,下到地下二层</div>
+        <div class="park-step"><i>3.</i>直行即达</div>
+      </div>
+      <div class="park-wait">不必找路,我们就在地库恭候二位 ♥</div>
+    </div>
+
     <div class="r" style="animation-delay:.85s">
       <button class="menu-toggle" id="menu-toggle">当晚菜单 <span class="arrow">▼</span></button>
       <div class="menu-panel" id="menu-panel">
@@ -312,7 +349,11 @@
             <div class="course-zh">柠檬意式奶冻</div>
             <div class="course-en">Lemon Panna Cotta</div>
           </div>
-          <div class="pairing"><em>Pairing</em> · Manzanita 西班牙有机苹果气泡汁 · alc 0%</div>
+          <div class="course">
+            <div class="course-tag">配 酒</div>
+            <div class="course-zh">西班牙有机苹果气泡汁</div>
+            <div class="course-en">Manzanita &middot; Zumo de Manzana Ecol&oacute;gico &middot; alc 0%</div>
+          </div>
         </div>
       </div>
     </div>
@@ -393,7 +434,7 @@
   function accepted() {
     btn.textContent = "已 恭 候 您";
     btn.classList.add("ok");
-    note.textContent = "席位已为您留好,周六见 ♥";
+    note.textContent = "周六见 ♥";
   }
   if (localStorage.getItem(KEY)) accepted();
   btn.onclick = () => { localStorage.setItem(KEY, "1"); accepted(); };
