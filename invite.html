@@ -48,20 +48,10 @@
   .r { animation: rise .9s ease both; }
   @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 
-  .monogram {
-    font-family: 'Playfair Display', serif;
-    font-style: italic; font-weight: 700;
-    font-size: 58px; line-height: 1;
-    letter-spacing: -8px;
-    text-shadow: 2px 2px 0 rgba(140,47,47,0.25);
-    margin-bottom: 8px;
-  }
-  .kitchen-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 11px; font-weight: 500;
-    letter-spacing: 5px; color: var(--faded);
-    text-transform: uppercase;
-    margin-bottom: 6px;
+  .badge-logo {
+    width: 168px; height: 168px;
+    mix-blend-mode: multiply;
+    margin-bottom: 10px;
   }
   .est {
     font-family: 'Playfair Display', serif;
@@ -177,9 +167,8 @@
   <span class="corner bl"></span><span class="corner br"></span>
   <div class="inner">
     <div class="r" style="animation-delay:.1s">
-      <div class="monogram">FF</div>
-      <div class="kitchen-name">Chef Felix's Secret Kitchen</div>
-      <div class="est">from New York to Beijing · est. 2025</div>
+      <img class="badge-logo" src="logo.png" alt="Chef Felix's Secret Kitchen">
+      <div class="est">from New York to Beijing</div>
     </div>
 
     <div class="r" style="animation-delay:.35s">
