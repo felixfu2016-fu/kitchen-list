@@ -70,10 +70,7 @@
 
   .badge-logo {
     width: 158px; height: 158px;
-    mix-blend-mode: multiply;
-    opacity: .92;
     margin-bottom: 8px;
-    filter: sepia(.15) hue-rotate(190deg) saturate(1.1); /* 微调向藏青 */
   }
   .tagline {
     font-family: 'Playfair Display', serif;
@@ -275,7 +272,7 @@
     </div>
 
     <div class="r" style="animation-delay:.25s">
-      <img class="badge-logo" src="logo.png" alt="Chef Felix's Secret Kitchen">
+      <img class="badge-logo" src="logo-navy.png" alt="Chef Felix's Secret Kitchen">
       <div class="tagline">From New York to Beijing</div>
     </div>
 
@@ -317,7 +314,7 @@
         <div class="park-step"><i>2.</i>地下一层右转,行至尽头再右转,下到地下二层</div>
         <div class="park-step"><i>3.</i>直行即达</div>
       </div>
-      <div class="park-wait">不必找路,我们就在地库恭候二位 ♥</div>
+      <div class="park-wait">不必找路,我们就在地库等你们 ♥</div>
     </div>
 
     <div class="r" style="animation-delay:.85s">
@@ -432,7 +429,7 @@
   const note = document.getElementById("note");
   const KEY = "invite-rsvp-20260718";
   function accepted() {
-    btn.textContent = "已 恭 候 您";
+    btn.textContent = "就 等 你 们 啦";
     btn.classList.add("ok");
     note.textContent = "周六见 ♥";
   }
