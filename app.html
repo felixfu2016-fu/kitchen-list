@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f6f4ef">
+<title>晚宴管家 · Chef Felix's Secret Kitchen</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,500;1,600&family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #f6f4ef;
+    --paper-deep: #efece4;
+    --ink: #191713;
+    --ink-soft: #57534a;
+    --faded: #a89f90;
+    --hairline: #ddd6c8;
+    --wine: #8c2f2f;
+    --olive: #6f7d5c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Serif SC', 'Songti SC', serif;
+    display: flex;
+    justify-content: center;
+    position: relative;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0;
+  }
+  .sheet {
+    width: 100%; max-width: 520px;
+    padding: 34px 20px calc(60px + env(safe-area-inset-bottom));
+    position: relative; z-index: 1;
+  }
+  .masthead { text-align: center; }
+  .monogram {
+    font-family: 'Playfair Display', serif;
+    font-style: italic; font-weight: 700;
+    font-size: 40px; line-height: 1; letter-spacing: -6px;
+    text-shadow: 1.5px 1.5px 0 rgba(140,47,47,0.28);
+    margin-bottom: 4px;
+  }
+  .kitchen-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 10px; font-weight: 500;
+    letter-spacing: 4px; color: var(--faded);
+    text-transform: uppercase; margin-bottom: 6px;
+  }
+  .sub { font-size: 11.5px; color: var(--ink-soft); letter-spacing: 2px; margin-bottom: 16px; }
+  .sub em { font-family: 'Playfair Display', serif; font-style: italic; color: var(--wine); }
+
+  /* ── prominent tabs ─────────────────── */
+  .tabbar-wrap {
+    position: sticky; top: 0; z-index: 20;
+    background: linear-gradient(var(--paper) 88%, transparent);
+    padding: 10px 0 14px;
+    margin: 0 -4px;
+  }
+  .tabbar {
+    display: flex;
+    border: 1.5px solid var(--ink);
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--paper);
+    box-shadow: 3px 3px 0 rgba(25,23,19,0.12);
+  }
+  .tab {
+    flex: 1;
+    font-family: inherit;
+    font-size: 16px; font-weight: 600;
+    letter-spacing: 5px; text-indent: 5px;
+    padding: 14px 0;
+    background: transparent;
+    color: var(--ink-soft);
+    border: none; cursor: pointer;
+    transition: all .2s ease;
+    position: relative;
+  }
+  .tab + .tab { border-left: 1.5px solid var(--ink); }
+  .tab.on {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .tab .badge {
+    font-family: 'Playfair Display', serif;
+    font-size: 11px; font-weight: 700;
+    letter-spacing: 0; text-indent: 0;
+    color: var(--wine);
+    background: var(--paper);
+    border-radius: 999px;
+    padding: 2px 8px;
+    margin-left: 6px;
+    position: relative; top: -1px;
+  }
+  .tab.on .badge { background: var(--wine); color: var(--paper); }
+
+  .view { display: none; }
+  .view.on { display: block; animation: fade .25s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+
+  /* ── progress ─────────────────── */
+  .progress-wrap { padding: 12px 4px 6px; }
+  .progress-line { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+  .progress-line .count { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+  .progress-line .count small { font-size: 13px; font-weight: 500; color: var(--faded); }
+  .progress-line .label { font-size: 11px; letter-spacing: 2px; color: var(--faded); }
+  .bar { height: 3px; background: var(--paper-deep); border-radius: 2px; overflow: hidden; }
+  .bar i { display: block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--ink) 60%, var(--wine)); transition: width .45s cubic-bezier(.22,1,.36,1); }
+  .stats { display: flex; gap: 14px; justify-content: center; font-size: 11px; color: var(--faded); letter-spacing: 1px; margin-top: 9px; }
+  .stats b { color: var(--ink-soft); font-weight: 600; }
+
+  /* ── section headers ─────────────────── */
+  .dish, .day {
+    margin: 28px 0 4px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--hairline);
+    display: flex; align-items: baseline; gap: 8px;
+  }
+  .dish .idx { font-family: 'Playfair Display', serif; font-style: italic; font-size: 13px; color: var(--wine); }
+  .dish .zh, .day .zh { font-size: 16px; font-weight: 700; letter-spacing: 2.5px; }
+  .day .zh { font-size: 17px; letter-spacing: 3px; }
+  .dish .en, .day .en { font-family: 'Playfair Display', serif; font-style: italic; font-size: 11px; color: var(--faded); margin-left: auto; text-align: right; }
+
+  /* ── checkbox ─────────────────── */
+  .box {
+    flex-shrink: 0;
+    width: 21px; height: 21px;
+    border: 1.5px solid var(--ink-soft);
+    border-radius: 2px;
+    position: relative;
+    transition: all .2s;
+  }
+  .box::after {
+    content: "";
+    position: absolute; inset: 0;
+    background: center/13px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2.5 8.5 6 12l7.5-8' fill='none' stroke='%23f6f4ef' stroke-width='2.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    opacity: 0; transform: scale(.4);
+    transition: all .22s cubic-bezier(.34,1.56,.64,1);
+  }
+  .done > .row .box, .step.done .box { background: var(--ink); border-color: var(--ink); }
+  .done > .row .box::after, .step.done .box::after { opacity: 1; transform: scale(1); }
+
+  /* ── shopping items ─────────────────── */
+  .item { padding: 13px 2px 11px; border-bottom: 1px dashed #e7e2d6; }
+  .item:last-of-type { border-bottom: none; }
+  .row { display: flex; align-items: baseline; gap: 12px; font-size: 16px; cursor: pointer; }
+  .row .box { top: 4px; }
+  .name { transition: color .25s; }
+  .name-wrap { position: relative; }
+  .name-wrap::after {
+    content: "";
+    position: absolute; left: -2px; right: -2px; top: 55%;
+    height: 1.5px; background: var(--wine);
+    transform: scaleX(0); transform-origin: left center;
+    transition: transform .3s ease;
+  }
+  .item.done .name { color: var(--faded); }
+  .item.done .name-wrap::after { transform: scaleX(1); }
+  .qty { margin-left: auto; font-size: 12px; color: var(--faded); white-space: nowrap; padding-left: 10px; letter-spacing: 0.5px; }
+  .item.done .qty { color: #cdc6b8; }
+  .chips { display: flex; gap: 7px; margin: 10px 0 0 33px; flex-wrap: wrap; }
+  .chip {
+    font-family: inherit;
+    font-size: 12.5px; letter-spacing: 1.5px;
+    color: var(--faded);
+    border: 1px solid var(--hairline);
+    background: transparent;
+    border-radius: 999px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all .18s ease;
+    user-select: none;
+  }
+  .chip:active { transform: scale(.94); }
+  .chip.on { background: var(--ink); color: var(--paper); border-color: var(--ink); box-shadow: 0 2px 6px rgba(25,23,19,.22); }
+  .chip.on.home { background: var(--olive); border-color: var(--olive); box-shadow: 0 2px 6px rgba(111,125,92,.3); }
+  .note { font-size: 11.5px; color: var(--faded); margin: 7px 0 0 33px; line-height: 1.7; }
+  .note::before { content: "— "; color: var(--wine); }
+
+  /* ── prep steps ─────────────────── */
+  .step { display: flex; gap: 12px; padding: 14px 2px 12px; border-bottom: 1px dashed #e7e2d6; cursor: pointer; }
+  .step:last-of-type { border-bottom: none; }
+  .time {
+    flex-shrink: 0; width: 52px;
+    font-family: 'Playfair Display', serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--wine);
+    padding-top: 3px; letter-spacing: 0.5px;
+  }
+  .step .box { top: 2px; }
+  .body-col { flex: 1; }
+  .task { font-size: 15.5px; font-weight: 600; letter-spacing: 1px; transition: color .25s; }
+  .task .flag {
+    font-size: 10.5px; font-weight: 400;
+    color: var(--paper); background: var(--wine);
+    border-radius: 3px; padding: 2px 6px;
+    letter-spacing: 2px; margin-left: 6px;
+    position: relative; top: -1px; white-space: nowrap;
+  }
+  .detail { font-size: 12.5px; color: var(--ink-soft); line-height: 1.75; margin-top: 4px; }
+  .step.done .task { color: var(--faded); text-decoration: line-through; text-decoration-color: var(--wine); text-decoration-thickness: 1.5px; }
+  .step.done .detail { color: #c9c2b4; }
+  .step.done .time { color: #c9a0a0; }
+
+  .reset {
+    display: block; margin: 34px auto 0;
+    background: none; border: 1px solid var(--hairline);
+    color: var(--faded); font-family: inherit;
+    font-size: 12px; letter-spacing: 3px;
+    padding: 10px 26px; border-radius: 2px; cursor: pointer;
+  }
+  .footer {
+    text-align: center; margin-top: 30px;
+    font-family: 'Playfair Display', serif; font-style: italic;
+    font-size: 12.5px; color: var(--faded); letter-spacing: 1px;
+  }
+  .footer .heart { color: var(--wine); font-style: normal; }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header class="masthead">
+    <div class="monogram">FF</div>
+    <div class="kitchen-name">Chef Felix's Secret Kitchen</div>
+    <div class="sub">2026.07.18 · 小胡 &amp; 孙老师晚宴 · <em>Dinner Planner</em></div>
+  </header>
+
+  <div class="tabbar-wrap">
+    <div class="tabbar">
+      <button class="tab on" id="tab-shop">采购清单<span class="badge" id="badge-shop">0%</span></button>
+      <button class="tab" id="tab-prep">备餐流程<span class="badge" id="badge-prep">0%</span></button>
+    </div>
+  </div>
+
+  <!-- ═══ 采购清单 ═══ -->
+  <section class="view on" id="view-shop">
+    <div class="progress-wrap">
+      <div class="progress-line">
+        <span class="count"><span id="s-done">0</span><small> / <span id="s-total">0</span> 项备齐</small></span>
+        <span class="label" id="s-pct">0%</span>
+      </div>
+      <div class="bar"><i id="s-fill"></i></div>
+      <div class="stats" id="s-stats"></div>
+    </div>
+    <main id="s-list"></main>
+    <button class="reset" id="s-reset">重 置 采 购 进 度</button>
+  </section>
+
+  <!-- ═══ 备餐流程 ═══ -->
+  <section class="view" id="view-prep">
+    <div class="progress-wrap">
+      <div class="progress-line">
+        <span class="count"><span id="p-done">0</span><small> / <span id="p-total">0</span> 步完成</small></span>
+        <span class="label" id="p-pct">0%</span>
+      </div>
+      <div class="bar"><i id="p-fill"></i></div>
+    </div>
+    <main id="p-list"></main>
+    <button class="reset" id="p-reset">重 置 流 程 进 度</button>
+  </section>
+
+  <div class="footer">Chef Felix's Secret Kitchen <span class="heart">♥</span> from New York to Beijing</div>
+</div>
+
+<script>
+/* ── tab switching ── */
+(function () {
+  const tabs = { shop: document.getElementById("tab-shop"), prep: document.getElementById("tab-prep") };
+  const views = { shop: document.getElementById("view-shop"), prep: document.getElementById("view-prep") };
+  function show(which) {
+    Object.keys(tabs).forEach(k => {
+      tabs[k].classList.toggle("on", k === which);
+      views[k].classList.toggle("on", k === which);
+    });
+    localStorage.setItem("planner-tab", which);
+    window.scrollTo(0, 0);
+  }
+  tabs.shop.onclick = () => show("shop");
+  tabs.prep.onclick = () => show("prep");
+  show(localStorage.getItem("planner-tab") || "shop");
+})();
+
+/* ── 采购清单(沿用原 key,进度与旧页面互通)── */
+(function () {
+  const DATA = [
+    { zh: "蜜桃鱼子酱鳌虾塔塔", en: "Langoustine Tartare", items: [
+      ["鳌虾(刺身级)", "8–12 只"],
+      ["白桃 / 水蜜桃", "2 个"],
+      ["鱼子酱", "1 小罐 30g"],
+      ["柠檬", "2 个(甜点共用)"],
+      ["干葱头(小洋葱头)", "1 个"],
+      ["细香葱 / 莳萝", "1 小把"],
+      ["初榨橄榄油(好油)", "备查"],
+    ]},
+    { zh: "西班牙蒜香油浸虾", en: "Gambas al Ajillo", items: [
+      ["大虾(鲜虾/红虾)", "500g"],
+      ["大蒜", "2 头"],
+      ["干辣椒 / 辣椒碎", "少量"],
+      ["欧芹", "1 把(牛尾共用)"],
+      ["法棍", "1 根"],
+      ["橄榄油(油浸用量大)", "≥250ml"],
+      ["雪莉酒", "可选,白兰地可替"],
+    ]},
+    { zh: "法式龙虾浓汤", en: "Lobster Bisque", items: [
+      ["活波士顿龙虾", "1–2 只"],
+      ["洋葱 / 胡萝卜 / 西芹", "各 2(牛尾共用)"],
+      ["番茄膏", "1 小罐(牛尾共用)"],
+      ["白兰地", "备查"],
+      ["干白葡萄酒(烩饭共用)", "1 瓶"],
+      ["淡奶油(甜点共用)", "750ml"],
+      ["百里香 / 月桂叶", "备查"],
+      ["大米或面粉(增稠)", "备查", "经典 bisque 用少量米或面粉增稠,家里有即可"],
+    ]},
+    { zh: "米兰炖牛尾烩饭", en: "Risotto alla Milanese", items: [
+      ["牛尾", "1kg"],
+      ["藏红花", "1 小份"],
+      ["烩饭米(Arborio)", "300g"],
+      ["帕玛森芝士块", "150g"],
+      ["牛高汤 / 高汤块", "1.5L"],
+      ["牛骨髓", "可选", "传统米兰烩饭以骨髓起锅,风味更正;不加也成立"],
+      ["黄油", "备查", "格雷莫拉塔用已有的柠檬皮 + 欧芹 + 蒜即可"],
+    ]},
+    { zh: "柠檬意式奶冻", en: "Lemon Panna Cotta", items: [
+      ["牛奶", "250ml"],
+      ["吉利丁片", "1 盒"],
+      ["香草荚 / 香草精", "可选"],
+      ["白砂糖", "备查", "提前一晚做好冷藏,至少冷藏 4 小时"],
+    ]},
+    { zh: "配饮与餐桌", en: "Drinks & Table", items: [
+      ["Manzanita 苹果气泡汁", "2 瓶(冰镇)"],
+      ["气泡水 / 饮用水", "若干"],
+      ["菜单打印", "4 份"],
+      ["餐巾 / 蜡烛 / 鲜花", "可选"],
+    ]},
+  ];
+  const SOURCES = ["盒马", "淘宝", "供应商", "家里有"];
+  const KEY = "shopping-20260718-v3";
+  const ROMAN = ["I", "II", "III", "IV", "V", "VI"];
+
+  const state = JSON.parse(localStorage.getItem(KEY) || '{"checked":{},"source":{}}');
+  const DEFAULTS = {
+    0:[1,"家里有"], 1:[1,"家里有"], 2:[0,"淘宝"], 3:[0,"盒马"], 4:[0,"盒马"], 5:[0,"淘宝"], 6:[1,"家里有"],
+    7:[0,"盒马"], 8:[0,"盒马"], 9:[1,"家里有"], 10:[0,"淘宝"], 11:[1,"家里有"], 12:[1,"家里有"], 13:[1,"家里有"],
+    14:[0,"盒马"], 15:[0,"盒马"], 16:[1,"家里有"], 17:[1,"家里有"], 18:[1,"家里有"], 19:[0,"盒马"], 20:[1,"家里有"], 21:[1,"家里有"],
+    22:[0,"淘宝"], 23:[0,"淘宝"], 24:[1,"家里有"], 25:[1,"家里有"],
+    29:[0,"盒马"], 30:[1,"家里有"], 31:[1,"家里有"], 32:[1,"家里有"],
+    33:[1,"淘宝"], 34:[1,"淘宝"], 35:[1,"家里有"], 36:[1,"家里有"]
+  };
+  Object.entries(DEFAULTS).forEach(([i, [c, s]]) => {
+    if (!(i in state.checked)) state.checked[i] = !!c;
+    if (s && !(i in state.source)) state.source[i] = s;
+  });
+
+  const list = document.getElementById("s-list");
+  let idx = 0;
+  DATA.forEach((sec, s) => {
+    const d = document.createElement("div");
+    d.className = "dish";
+    d.innerHTML = `<span class="idx">${ROMAN[s]}.</span><span class="zh">${sec.zh}</span><span class="en">${sec.en}</span>`;
+    list.appendChild(d);
+    sec.items.forEach(([name, qty, note]) => {
+      const i = idx++;
+      const el = document.createElement("div");
+      el.className = "item";
+      el.innerHTML = `
+        <div class="row" data-i="${i}">
+          <span class="box"></span>
+          <span class="name-wrap"><span class="name">${name}</span></span>
+          <span class="qty">${qty}</span>
+        </div>
+        <div class="chips">${SOURCES.map(x => `<button class="chip" data-i="${i}" data-s="${x}">${x}</button>`).join("")}</div>
+        ${note ? `<div class="note">${note}</div>` : ""}`;
+      list.appendChild(el);
+    });
+  });
+  const items = [...list.querySelectorAll(".item")];
+
+  list.addEventListener("click", e => {
+    const chip = e.target.closest(".chip");
+    const row = e.target.closest(".row");
+    if (chip) {
+      const i = chip.dataset.i, s = chip.dataset.s;
+      if (state.source[i] === s) delete state.source[i];
+      else { state.source[i] = s; if (s === "家里有") state.checked[i] = true; }
+    } else if (row) {
+      const i = row.dataset.i;
+      state.checked[i] = !state.checked[i];
+    } else return;
+    save(); render();
+  });
+
+  function save() { localStorage.setItem(KEY, JSON.stringify(state)); }
+  function render() {
+    let done = 0; const counts = {};
+    items.forEach((el, i) => {
+      const on = !!state.checked[i];
+      el.classList.toggle("done", on);
+      if (on) done++;
+      const src = state.source[i];
+      if (src) counts[src] = (counts[src] || 0) + 1;
+      el.querySelectorAll(".chip").forEach(c => {
+        const sel = c.dataset.s === src;
+        c.classList.toggle("on", sel);
+        c.classList.toggle("home", sel && src === "家里有");
+      });
+    });
+    document.getElementById("s-done").textContent = done;
+    document.getElementById("s-total").textContent = items.length;
+    const pct = Math.round(done / items.length * 100);
+    document.getElementById("s-pct").textContent = pct + "%";
+    document.getElementById("s-fill").style.width = pct + "%";
+    document.getElementById("badge-shop").textContent = pct + "%";
+    document.getElementById("s-stats").innerHTML =
+      SOURCES.map(s => `${s} <b>${counts[s] || 0}</b>`).join("<span style='color:#ddd6c8'>·</span>");
+  }
+  document.getElementById("s-reset").onclick = () => {
+    if (!confirm("确定清空采购勾选和渠道标记?")) return;
+    state.checked = {}; state.source = {};
+    save(); render();
+  };
+  render();
+})();
+
+/* ── 备餐流程(沿用原 key)── */
+(function () {
+  const DATA = [
+    { zh: "周五 7.17", en: "Friday · Mise en Place", steps: [
+      ["18:00", "收货核对", "盒马 + 淘宝件到齐,对采购清单逐项勾掉", 0],
+      ["18:30", "鳌虾解冻", "冷冻移到冷藏缓慢解冻;冰鲜则不动", 0],
+      ["20:00", "牛尾开炖", "焯水、煎上色,下蔬菜、番茄膏、干白、高汤,小火慢炖盖盖", 1],
+      ["20:30", "龙虾浓汤", "烫熟取肉冷藏;壳炒香、白兰地点火、下蔬菜熬汤底", 0],
+      ["21:30", "柠檬奶冻", "做好入杯进冰箱,凝固需 4 小时以上", 1],
+      ["21:50", "汤底收尾", "打细过筛冷藏;Manzanita、气泡水进冰箱", 0],
+      ["22:30", "巡锅", "看牛尾,汤少补水", 0],
+      ["23:30", "牛尾收工", "筷子轻松插透即关火,稍凉连汁冷藏", 0],
+    ]},
+    { zh: "周六 7.18", en: "Saturday · Showtime", steps: [
+      ["下午", "白桃冰镇", "室温催熟的桃子放回冰箱", 0],
+      ["16:00", "全部备料", "蒜片、干葱末、香葱/莳萝/欧芹切碎分碗;帕玛森擦粉;藏红花温水泡;高汤上炉保温;格雷莫拉塔(柠檬皮+欧芹+蒜)拌好", 1],
+      ["17:00", "摆桌终检", "菜单、餐具、蜡烛鲜花、餐巾就位", 0],
+      ["17:30", "牛尾回热", "连汁小火回热后保温;不够软现在补炖;顺手确认奶冻凝固", 0],
+      ["18:15", "塔塔预拌", "鳌虾切丁拌干葱、柠檬汁、橄榄油,冷藏;桃子切丁", 0],
+      ["18:30", "烩饭开炒", "此后 25 分钟不离灶;同时浓汤回热、加奶油调味、龙虾肉入汤温热", 1],
+      ["18:45", "蒜香虾下锅", "8 分钟;烩饭离火拌黄油帕玛森", 1],
+      ["18:55", "集中装盘", "塔塔叠桃丁(鱼子酱最后一秒放)→ 浓汤入碗 → 烩饭铺牛尾撒格雷莫拉塔 → 蒜香虾连锅配法棍", 1],
+      ["19:00", "上桌开餐", "全部同时上桌,开 Manzanita", 0],
+      ["饭后", "甜点", "奶冻从冰箱直接上,现擦柠檬皮屑", 0],
+    ]},
+  ];
+  const KEY = "prep-20260718";
+  const state = JSON.parse(localStorage.getItem(KEY) || "{}");
+  const list = document.getElementById("p-list");
+  let idx = 0;
+
+  DATA.forEach(day => {
+    const d = document.createElement("div");
+    d.className = "day";
+    d.innerHTML = `<span class="zh">${day.zh}</span><span class="en">${day.en}</span>`;
+    list.appendChild(d);
+    day.steps.forEach(([time, task, detail, key]) => {
+      const i = idx++;
+      const el = document.createElement("div");
+      el.className = "step";
+      el.dataset.i = i;
+      el.innerHTML = `
+        <span class="time">${time}</span>
+        <span class="box"></span>
+        <div class="body-col">
+          <div class="task">${task}${key ? '<span class="flag">关键</span>' : ""}</div>
+          <div class="detail">${detail}</div>
+        </div>`;
+      list.appendChild(el);
+    });
+  });
+  const steps = [...list.querySelectorAll(".step")];
+
+  list.addEventListener("click", e => {
+    const el = e.target.closest(".step");
+    if (!el) return;
+    state[el.dataset.i] = !state[el.dataset.i];
+    localStorage.setItem(KEY, JSON.stringify(state));
+    render();
+  });
+
+  function render() {
+    let done = 0;
+    steps.forEach((el, i) => {
+      const on = !!state[i];
+      el.classList.toggle("done", on);
+      if (on) done++;
+    });
+    document.getElementById("p-done").textContent = done;
+    document.getElementById("p-total").textContent = steps.length;
+    const pct = Math.round(done / steps.length * 100);
+    document.getElementById("p-pct").textContent = pct + "%";
+    document.getElementById("p-fill").style.width = pct + "%";
+    document.getElementById("badge-prep").textContent = pct + "%";
+  }
+  document.getElementById("p-reset").onclick = () => {
+    if (!confirm("确定清空流程进度?(不影响采购清单)")) return;
+    Object.keys(state).forEach(k => delete state[k]);
+    localStorage.setItem(KEY, JSON.stringify(state));
+    render();
+  };
+  render();
+})();
+</script>
+</body>
+</html>
