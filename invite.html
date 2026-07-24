@@ -268,7 +268,7 @@
   <div class="inner">
     <div class="r" style="animation-delay:.05s">
       <div class="headline" id="headline">倒计时开始!</div>
-      <div class="subline" id="subline">距这场夏夜家宴<br>还有 3 天</div>
+      <div class="subline" id="subline">距这场夏日家宴<br>还有 4 天</div>
     </div>
 
     <div class="r" style="animation-delay:.25s">
@@ -278,22 +278,22 @@
 
     <div class="r" style="animation-delay:.45s">
       <div class="soon">诚邀 小胡 &amp; 孙老师</div>
-      <div class="invite-copy">盛夏的晚风与老朋友<br>都不该被辜负</div>
+      <div class="invite-copy">盛夏的阳光与老朋友<br>都不该被辜负</div>
       <div class="calendar" id="calendar">
-        <div class="cal-day" data-day="16">16</div>
         <div class="cal-day" data-day="17">17</div>
-        <div class="cal-day hot" data-day="18">18<small>七月 · 周六</small></div>
-        <div class="cal-day" data-day="19">19</div>
+        <div class="cal-day" data-day="18">18</div>
+        <div class="cal-day hot" data-day="19">19<small>七月 · 周日</small></div>
         <div class="cal-day" data-day="20">20</div>
+        <div class="cal-day" data-day="21">21</div>
       </div>
-      <div class="evening">夏夜傍晚 · 不见不散</div>
+      <div class="evening">周日中午 · 不见不散</div>
     </div>
 
     <div class="r desc" style="animation-delay:.6s">
       这是一场只为好朋友备下的家宴——<br>
       无需拘礼,带上好胃口就行。<br>
       五道式夏日菜单,佐 <b>Manzanita</b> 气泡苹果汁,<br>
-      愿这个夏夜轻松尽兴,欢聚一堂
+      愿这个夏日轻松尽兴,欢聚一堂
     </div>
 
     <div class="r" style="animation-delay:.68s">
@@ -370,22 +370,22 @@
 <script>
   /* 动态倒计时文案 */
   (function () {
-    const target = new Date(2026, 6, 18, 18, 0, 0); // 当天 18 点后视为开席,仅用于文案切换
+    const target = new Date(2026, 6, 19, 14, 0, 0); // 周日午后视为开席,仅用于文案切换
     const now = new Date();
-    const days = Math.ceil((new Date(2026,6,18) - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
+    const days = Math.ceil((new Date(2026,6,19) - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
     const h = document.getElementById("headline");
     const s = document.getElementById("subline");
-    if (days > 1) { s.innerHTML = "距这场夏夜家宴<br>还有 " + days + " 天"; }
-    else if (days === 1) { h.textContent = "就在明天!"; s.innerHTML = "夏夜家宴<br>明晚开席"; }
-    else if (days === 0 && now < target) { h.textContent = "就是今晚!"; s.innerHTML = "夏夜家宴<br>今晚开席"; }
-    else if (now >= target) { h.textContent = "感谢赏光"; s.innerHTML = "这个夏夜<br>因你们而完整 ♥"; }
+    if (days > 1) { s.innerHTML = "距这场夏日家宴<br>还有 " + days + " 天"; }
+    else if (days === 1) { h.textContent = "就在明天!"; s.innerHTML = "夏日家宴<br>明天中午开席"; }
+    else if (days === 0 && now < target) { h.textContent = "就是今天!"; s.innerHTML = "夏日家宴<br>今天中午开席"; }
+    else if (now >= target) { h.textContent = "感谢赏光"; s.innerHTML = "这个夏日<br>因你们而完整 ♥"; }
 
-    /* 日历「今天」游标:每天自动移动;7.18 当天高亮卡文案变为「就是今天」 */
+    /* 日历「今天」游标:每天自动移动;7.19 当天高亮卡文案变为「就是今天」 */
     if (now.getFullYear() === 2026 && now.getMonth() === 6) {
       const d = now.getDate();
       const cell = document.querySelector('#calendar .cal-day[data-day="' + d + '"]');
       if (cell) {
-        if (d === 18) { cell.querySelector("small").textContent = "就是今天"; }
+        if (d === 19) { cell.querySelector("small").textContent = "就是今天"; }
         else { cell.classList.add("today"); }
       }
     }
@@ -431,7 +431,7 @@
   function accepted() {
     btn.textContent = "就 等 你 们 啦";
     btn.classList.add("ok");
-    note.textContent = "周六见 ♥";
+    note.textContent = "周日见 ♥";
   }
   if (localStorage.getItem(KEY)) accepted();
   btn.onclick = () => { localStorage.setItem(KEY, "1"); accepted(); };
