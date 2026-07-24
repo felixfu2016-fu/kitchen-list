@@ -268,7 +268,7 @@
   <div class="inner">
     <div class="r" style="animation-delay:.05s">
       <div class="headline" id="headline">倒计时开始!</div>
-      <div class="subline" id="subline">距这场夏日家宴<br>还有 4 天</div>
+      <div class="subline" id="subline">距这场夏日家宴<br>还有 2 天</div>
     </div>
 
     <div class="r" style="animation-delay:.25s">
@@ -280,11 +280,11 @@
       <div class="soon">诚邀 小胡 &amp; 孙老师</div>
       <div class="invite-copy">盛夏的阳光与老朋友<br>都不该被辜负</div>
       <div class="calendar" id="calendar">
-        <div class="cal-day" data-day="17">17</div>
-        <div class="cal-day" data-day="18">18</div>
-        <div class="cal-day hot" data-day="19">19<small>七月 · 周日</small></div>
-        <div class="cal-day" data-day="20">20</div>
-        <div class="cal-day" data-day="21">21</div>
+        <div class="cal-day" data-day="24">24</div>
+        <div class="cal-day" data-day="25">25</div>
+        <div class="cal-day hot" data-day="26">26<small>七月 · 周日</small></div>
+        <div class="cal-day" data-day="27">27</div>
+        <div class="cal-day" data-day="28">28</div>
       </div>
       <div class="evening">周日中午 · 不见不散</div>
     </div>
@@ -370,9 +370,9 @@
 <script>
   /* 动态倒计时文案 */
   (function () {
-    const target = new Date(2026, 6, 19, 14, 0, 0); // 周日午后视为开席,仅用于文案切换
+    const target = new Date(2026, 6, 26, 14, 0, 0); // 周日午后视为开席,仅用于文案切换
     const now = new Date();
-    const days = Math.ceil((new Date(2026,6,19) - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
+    const days = Math.ceil((new Date(2026,6,26) - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
     const h = document.getElementById("headline");
     const s = document.getElementById("subline");
     if (days > 1) { s.innerHTML = "距这场夏日家宴<br>还有 " + days + " 天"; }
@@ -385,7 +385,7 @@
       const d = now.getDate();
       const cell = document.querySelector('#calendar .cal-day[data-day="' + d + '"]');
       if (cell) {
-        if (d === 19) { cell.querySelector("small").textContent = "就是今天"; }
+        if (d === 26) { cell.querySelector("small").textContent = "就是今天"; }
         else { cell.classList.add("today"); }
       }
     }
